@@ -97,6 +97,9 @@ def wiktionary(bot, trigger):
         bot.reply('You must tell me what to look up!')
         return
 
+    # Prevent issues with API not handling capital letters
+    word = word.lower()
+
     _etymology, definitions = wikt(word)
     if not definitions:
         bot.say("Couldn't get any definitions for %s." % word)
