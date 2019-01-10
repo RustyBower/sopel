@@ -97,13 +97,13 @@ def wiktionary(bot, trigger):
         bot.reply('You must tell me what to look up!')
         return
 
-    # Prevent issues with API not handling capital letters
-    word = word.lower()
-
     _etymology, definitions = wikt(word)
     if not definitions:
-        bot.say("Couldn't get any definitions for %s." % word)
-        return
+        # Cast word to lower to check in case of mismatched user input
+        _etymology, definitions = wikt(word.lower())
+        if not definitions:
+            bot.say("Couldn't get any definitions for %s." % word)
+            return
 
     result = format(word, definitions)
     if len(result) < 150:
