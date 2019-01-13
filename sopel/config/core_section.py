@@ -96,8 +96,23 @@ class CoreSection(StaticSection):
     channels = ListAttribute('channels')
     """List of channels for the bot to join when it connects"""
 
+    db_type = ValidatedAttribute('db_type')
+    """The type of database to use for Sopel's database. (SQLite or MySQL)"""
+
     db_filename = ValidatedAttribute('db_filename')
-    """The filename for Sopel's database."""
+    """The filename for Sopel's database. (SQLite only)"""
+
+    db_user = ValidatedAttribute('db_username')
+    """The user for Sopel's database. (MySQL only)"""
+
+    db_pass = ValidatedAttribute('db_pass')
+    """The password for Sopel's database. (MySQL only)"""
+
+    db_host = ValidatedAttribute('db_host')
+    """The host for Sopel's database. (MySQL only)"""
+
+    db_database = ValidatedAttribute('db_database')
+    """The database for Sopel's database. (MySQL only)"""
 
     default_time_format = ValidatedAttribute('default_time_format',
                                              default='%Y-%m-%d - %T%Z')
