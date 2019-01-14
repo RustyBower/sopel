@@ -8,6 +8,7 @@ import sys
 from sopel.tools import Identifier
 
 from sqlalchemy import create_engine, Column, ForeignKey, Integer, String
+from sqlalchemy.engine.url import URL
 from sqlalchemy.exc import OperationalError, SQLAlchemyError
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import scoped_session, sessionmaker
@@ -48,7 +49,7 @@ class Nicknames(BASE):
     Nicknames SQLAlchemy Class
     """
     __tablename__ = 'nicknames'
-    nick_id = Column(Integer, ForeignKey('nicknames.nick_id'), primary_key=True)
+    nick_id = Column(Integer, ForeignKey('nick_ids.nick_id'), primary_key=True)
     slug = Column(String, primary_key=True)
     canonical = Column(String)
 
@@ -58,7 +59,7 @@ class NickValues(BASE):
     NickValues SQLAlchemy Class
     """
     __tablename__ = 'nick_values'
-    nick_id = Column(Integer, ForeignKey('nicknames.nick_id'), primary_key=True)
+    nick_id = Column(Integer, ForeignKey('nick_ids.nick_id'), primary_key=True)
     key = Column(String, primary_key=True)
     value = Column(String)
 
@@ -88,22 +89,8 @@ class SopelDB(object):
         # SQLite - sqlite:////home/sopel/.sopel/default.db
         db_type = config.core.db_type
 
-        if db_type and db_type == 'mysql':
-            db_user = config.core.db_user
-            db_pass = config.core.db_pass
-            db_host = config.core.db_host
-            db_database = config.core.db_database
-
-            # Ensure we have all our variables defined
-            if db_user is None or db_pass is None \
-                    or db_host is None or db_database is None:
-                raise Exception('Please make sure the following core '
-                                'configuration values are defined: '
-                                'db_user, db_pass, db_host, db_database')
-            self.engine = create_engine('mysql://%s:%s@%s/%s' %
-                                        (db_user, db_pass, db_host, db_database))
-        # Otherwise, assume sqlite
-        else:
+        # Handle SQLite explicitly as a default
+        if not db_type or db_type == 'sqlite':
             path = config.core.db_filename
             config_dir, config_file = os.path.split(config.filename)
             config_name, _ = os.path.splitext(config_file)
@@ -113,9 +100,41 @@ class SopelDB(object):
             if not os.path.isabs(path):
                 path = os.path.normpath(os.path.join(config_dir, path))
             self.filename = path
-            self.engine = create_engine('sqlite:///%s' % path)
+            self.url = 'sqlite:///%s' % path
+        # Otherwise, handle all other database engines
+        else:
+            if db_type == 'mysql':
+                drivername = config.core.db_driver or 'mysql'
+            elif db_type == 'postgres':
+                drivername = config.core.db_driver or 'postgresql'
+            elif db_type == 'oracle':
+                drivername = config.core.db_driver or 'oracle'
+            elif db_type == 'mssql':
+                drivername = config.core.db_driver or 'mssql+pyodbc'
+            elif db_type == 'firebird':
+                drivername = config.core.db_driver or 'firebird+fdb'
+            elif db_type == 'sybase':
+                drivername = config.core.db_driver or 'sybase+pysybase'
+            else:
+                raise Exception('Unknown db_type')
 
-        # Catch any errors connecting to MySQL
+            db_user = config.core.db_user
+            db_pass = config.core.db_pass
+            db_host = config.core.db_host
+            db_port = config.core.db_port  # Optional
+            db_database = config.core.db_database  # Optional, depending on DB
+
+            # Ensure we have all our variables defined
+            if db_user is None or db_pass is None or db_host is None:
+                raise Exception('Please make sure the following core '
+                                'configuration values are defined: '
+                                'db_user, db_pass, db_host')
+            self.url = URL(drivername=drivername, username=db_user, password=db_pass,
+                           host=db_host, port=db_port, database=db_database)
+
+        self.engine = create_engine(self.url)
+
+        # Catch any errors connecting to database
         try:
             self.engine.connect()
         except OperationalError:
@@ -138,11 +157,6 @@ class SopelDB(object):
         called per PEP 249."""
         with self.connect() as conn:
             return conn.execute(*args, **kwargs)
-            #cur = conn.cursor()
-            #return cur.execute(*args, **kwargs)
-
-    def _create(self):
-        BASE.metadata.create_all(self.engine)
 
     def get_uri(self):
         """Returns a URL for the database, usable to connect with SQLAlchemy."""
