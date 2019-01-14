@@ -50,8 +50,8 @@ class Nicknames(BASE):
     """
     __tablename__ = 'nicknames'
     nick_id = Column(Integer, ForeignKey('nick_ids.nick_id'), primary_key=True)
-    slug = Column(String, primary_key=True)
-    canonical = Column(String)
+    slug = Column(String(255), primary_key=True)
+    canonical = Column(String(255))
 
 
 class NickValues(BASE):
@@ -60,8 +60,8 @@ class NickValues(BASE):
     """
     __tablename__ = 'nick_values'
     nick_id = Column(Integer, ForeignKey('nick_ids.nick_id'), primary_key=True)
-    key = Column(String, primary_key=True)
-    value = Column(String)
+    key = Column(String(255), primary_key=True)
+    value = Column(String(255))
 
 
 class ChannelValues(BASE):
@@ -69,9 +69,9 @@ class ChannelValues(BASE):
     ChannelValues SQLAlchemy Class
     """
     __tablename__ = 'channel_values'
-    channel = Column(String, primary_key=True)
-    key = Column(String, primary_key=True)
-    value = Column(String)
+    channel = Column(String(255), primary_key=True)
+    key = Column(String(255), primary_key=True)
+    value = Column(String(255))
 
 
 class SopelDB(object):
@@ -110,7 +110,7 @@ class SopelDB(object):
             elif db_type == 'oracle':
                 drivername = config.core.db_driver or 'oracle'
             elif db_type == 'mssql':
-                drivername = config.core.db_driver or 'mssql+pyodbc'
+                drivername = config.core.db_driver or 'mssql+pymssql'
             elif db_type == 'firebird':
                 drivername = config.core.db_driver or 'firebird+fdb'
             elif db_type == 'sybase':

@@ -102,6 +102,7 @@ class CoreSection(StaticSection):
 
     mysql - pip install mysql-python (Python 2) or pip install mysqlclient (Python 3)
     postgres - pip install psycopg2
+    mssql - pip install pymssql
 
     See https://docs.sqlalchemy.org/en/latest/dialects/ for a full list of dialects"""
 
