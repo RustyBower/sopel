@@ -50,8 +50,8 @@ class Nicknames(BASE):
     """
     __tablename__ = 'nicknames'
     nick_id = Column(Integer, ForeignKey('nick_ids.nick_id'), primary_key=True)
-    slug = Column(String(255), primary_key=True)
-    canonical = Column(String(255))
+    slug = Column(String, primary_key=True)
+    canonical = Column(String)
 
 
 class NickValues(BASE):
@@ -122,7 +122,7 @@ class SopelDB(object):
             db_pass = config.core.db_pass
             db_host = config.core.db_host
             db_port = config.core.db_port  # Optional
-            db_database = config.core.db_database  # Optional, depending on DB
+            db_name = config.core.db_name  # Optional, depending on DB
 
             # Ensure we have all our variables defined
             if db_user is None or db_pass is None or db_host is None:
@@ -130,7 +130,7 @@ class SopelDB(object):
                                 'configuration values are defined: '
                                 'db_user, db_pass, db_host')
             self.url = URL(drivername=drivername, username=db_user, password=db_pass,
-                           host=db_host, port=db_port, database=db_database)
+                           host=db_host, port=db_port, database=db_name)
 
         self.engine = create_engine(self.url)
 
