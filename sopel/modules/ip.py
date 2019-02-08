@@ -33,10 +33,15 @@ LOGGER = get_logger(__name__)
 
 class GeoipSection(StaticSection):
     GeoIP_db_path = FilenameAttribute('GeoIP_db_path', directory=True)
-    """Path of the directory containing the GeoIP db files."""
+    """Path of the directory containing the GeoIP database files."""
 
 
 def configure(config):
+    """
+    | name | example | purpose |
+    | ---- | ------- | ------- |
+    | GeoIP\\_db\\_path | /home/sopel/GeoIP/ | Path to the GeoIP database files |
+    """
     config.define_section('ip', GeoipSection)
     config.ip.configure_setting('GeoIP_db_path',
                                 'Path of the GeoIP db files')

@@ -43,14 +43,21 @@ known_good = []
 
 class SafetySection(StaticSection):
     enabled_by_default = ValidatedAttribute('enabled_by_default', bool, default=True)
-    """Enable URL safety in all channels where it isn't explicitly disabled."""
+    """Whether to enable URL safety in all channels where it isn't explicitly disabled."""
     known_good = ListAttribute('known_good')
     """List of "known good" domains to ignore."""
     vt_api_key = ValidatedAttribute('vt_api_key')
-    """Optional VirusTotal API key."""
+    """Optional VirusTotal API key (improves malicious URL detection)."""
 
 
 def configure(config):
+    """
+    | name | example | purpose |
+    | ---- | ------- | ------- |
+    | enabled\\_by\\_default | True | Enable URL safety in all channels where it isn't explicitly disabled. |
+    | known\\_good | sopel.chat,dftba.net | List of "known good" domains to ignore. |
+    | vt\\_api\\_key | 0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef | Optional VirusTotal API key to improve malicious URL detection |
+    """
     config.define_section('safety', SafetySection)
     config.safety.configure_setting(
         'enabled_by_default',

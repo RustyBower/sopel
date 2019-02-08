@@ -23,10 +23,15 @@ LOGGER = get_logger(__name__)
 
 class BugzillaSection(StaticSection):
     domains = ListAttribute('domains')
-    """The domains of the Bugzilla instances from which to get information."""
+    """A list of Bugzilla issue tracker domains from which to get information."""
 
 
 def configure(config):
+    """
+    | name | example | purpose |
+    | ---- | ------- | ------- |
+    | domains | bugzilla.redhat.com,bugzilla.mozilla.org | A list of Bugzilla issue tracker domains |
+    """
     config.define_section('bugzilla', BugzillaSection)
     config.bugzilla.configure_setting(
         'domains',

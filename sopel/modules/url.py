@@ -33,12 +33,22 @@ max_bytes = 655360
 class UrlSection(StaticSection):
     # TODO some validation rules maybe?
     exclude = ListAttribute('exclude')
+    """A list of regular expressions to match URLs for which the title should not be shown."""
     exclusion_char = ValidatedAttribute('exclusion_char', default='!')
+    """A character (or string) which, when immediately preceding a URL, will stop that URL's title from being shown."""
     shorten_url_length = ValidatedAttribute(
         'shorten_url_length', int, default=0)
+    """If greater than 0, the title fetcher will include a TinyURL version of links longer than this many characters."""
 
 
 def configure(config):
+    """
+    | name | example | purpose |
+    | ---- | ------- | ------- |
+    | exclude | https?://git\\\\.io/.* | A list of regular expressions for URLs for which the title should not be shown. |
+    | exclusion\\_char | ! | A character (or string) which, when immediately preceding a URL, will stop the URL's title from being shown. |
+    | shorten\\_url\\_length | 72 | If greater than 0, the title fetcher will include a TinyURL version of links longer than this many characters. |
+    """
     config.define_section('url', UrlSection)
     config.url.configure_setting(
         'exclude',
