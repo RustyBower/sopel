@@ -90,7 +90,7 @@ class SopelDB(object):
         db_type = config.core.db_type
 
         # Handle SQLite explicitly as a default
-        if not db_type or db_type == 'sqlite':
+        if db_type == 'sqlite':
             path = config.core.db_filename
             config_dir, config_file = os.path.split(config.filename)
             config_name, _ = os.path.splitext(config_file)
@@ -295,11 +295,6 @@ class SopelDB(object):
         nick_id = self.get_nick_id(nick, False)
         session = self.ssession()
         try:
-            count = session.query(Nicknames) \
-                .filter(Nicknames.nick_id == nick_id) \
-                .count()
-            if count <= 1:
-                raise ValueError('Given alias is the only entry in its group.')
             session.query(Nicknames).filter(Nicknames.nick_id == nick_id).delete()
             session.query(NickValues).filter(NickValues.nick_id == nick_id).delete()
             session.commit()

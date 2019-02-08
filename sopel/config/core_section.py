@@ -126,8 +126,8 @@ class CoreSection(StaticSection):
     db_port = ValidatedAttribute('db_port')
     """The port for Sopel's database."""
 
-    db_database = ValidatedAttribute('db_database')
-    """The database for Sopel's database."""
+    db_name = ValidatedAttribute('db_name')
+    """The name of Sopel's database."""
 
     default_time_format = ValidatedAttribute('default_time_format',
                                              default='%Y-%m-%d - %T%Z')
